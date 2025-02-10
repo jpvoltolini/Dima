@@ -3,6 +3,7 @@ using Dima.Core.Handlers;
 using Dima.Core.Models;
 using Dima.Core.Requests.Categories;
 using Dima.Core.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Dima.Api.Endpoints.Categories
 {
@@ -10,7 +11,7 @@ namespace Dima.Api.Endpoints.Categories
     {
         public static void Map(IEndpointRouteBuilder app)
 
-           => app.MapPost("/{id}", HandleAsync)
+           => app.MapDelete("/{id}", HandleAsync)
             .WithName("Categories: Delete")
             .WithSummary("Excluir uma categoria")
             .WithDescription("Exclui a categoria Selecionada.")
@@ -20,15 +21,20 @@ namespace Dima.Api.Endpoints.Categories
 
 
 
-        private static async Task<IResult> HandleAsync(ICategoryHandler handler, DeleteCategoryRequest request, long id)
+        private static async Task<IResult> HandleAsync(
+            [FromServices] ICategoryHandler handler, [
+            FromRoute] long id)
         {
-            request.Id = id;
-            request.UserId = "";
+            var request = new DeleteCategoryRequest
+            {
+                Id = id,
+                UserId = ""
+            };
 
             var result = await handler.DeleteAsync(request);
             return result.IsSuccess
-                    ? TypedResults.Ok(result.Data)
-                    : TypedResults.BadRequest(result.Data);
+                    ? TypedResults.Ok(result)
+                    : TypedResults.BadRequest(result);
         }
     }
 }

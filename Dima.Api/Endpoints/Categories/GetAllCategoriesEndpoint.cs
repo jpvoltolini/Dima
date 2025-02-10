@@ -12,7 +12,7 @@ namespace Dima.Api.Endpoints.Categories
     {
         public static void Map(IEndpointRouteBuilder app)
 
-           => app.MapPost("", HandleAsync)
+           => app.MapGet("/", HandleAsync)
             .WithName("Categories: Get All")
             .WithSummary("Recupera todas as categorias")
             .WithDescription("Monta uma lista com todas as categorias.")
@@ -23,14 +23,16 @@ namespace Dima.Api.Endpoints.Categories
 
 
         private static async Task<IResult> HandleAsync(
-            ICategoryHandler handler, 
-            GetAllCategoriesRequest request, 
+            [FromServices] ICategoryHandler handler, 
             [FromQuery] int pageSize = Configuration.DefaultPageSize,
             [FromQuery] int pageNumber = Configuration.DefaultPageNumber)
         {
-            request.UserId = "";
-            request.PageSize = pageSize;
-            request.PageNumber = pageNumber;
+            var request = new GetAllCategoriesRequest
+            {
+                UserId = "",
+                PageSize = pageSize,
+                PageNumber = pageNumber
+            };
 
             var result = await handler.GetAllAsync(request);
             return result.IsSuccess

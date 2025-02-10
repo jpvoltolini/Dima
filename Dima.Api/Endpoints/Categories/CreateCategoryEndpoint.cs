@@ -3,6 +3,7 @@ using Dima.Core.Handlers;
 using Dima.Core.Models;
 using Dima.Core.Requests.Categories;
 using Dima.Core.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Dima.Api.Endpoints.Categories
 {
@@ -10,7 +11,7 @@ namespace Dima.Api.Endpoints.Categories
     {
         public static void Map(IEndpointRouteBuilder app)
 
-           => app.MapPost("", HandleAsync)
+           => app.MapPost("/", HandleAsync)
             .WithName("Categories: Create")
             .WithSummary("Cria uma categoria")
             .WithOrder(1)
@@ -18,7 +19,8 @@ namespace Dima.Api.Endpoints.Categories
         
 
         
-        private static async Task<IResult> HandleAsync(ICategoryHandler handler, CreateCategoryRequest request)
+        private static async Task<IResult> HandleAsync([FromServices] ICategoryHandler handler,
+            [FromBody] CreateCategoryRequest request)
         {
             var result = await handler.CreateAsync(request);
             return result.IsSuccess 

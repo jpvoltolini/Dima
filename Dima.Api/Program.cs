@@ -1,6 +1,7 @@
 using Dima.Api.Categories;
 using Dima.Api.Data;
 using Dima.Api.Endpoints;
+using Dima.Api.Handlers;
 using Dima.Core.Handlers;
 using Dima.Core.Models;
 using Dima.Core.Requests.Categories;
@@ -12,18 +13,20 @@ var builder = WebApplication.CreateBuilder(args);
 var cnnStr = builder.Configuration.GetConnectionString("DefaultConnection1");
 
 builder.Services.AddDbContext<AppDbContext>(
-    x =>
-    {
-        x.UseSqlServer(cnnStr);
-    });
+    x => { x.UseSqlServer(cnnStr); });
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(x =>
-    {
-        x.CustomSchemaIds(n => n.FullName);
-    });
+{
+    x.CustomSchemaIds(n => n.FullName);
+    x.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+});
 
-builder.Services.AddTransient<ICategoryHandler, CategoryHandler>();
+
+    builder.Services.AddTransient<ICategoryHandler, CategoryHandler>();
+    builder.Services.AddTransient<ITransactionHandler, TransactionHandler>();
+
+
 
 var app = builder.Build();
 
@@ -33,5 +36,3 @@ app.UseSwaggerUI();
 app.MapEndpoints();
 
 app.Run();
-
-

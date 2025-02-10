@@ -3,6 +3,7 @@ using Dima.Core.Handlers;
 using Dima.Core.Models;
 using Dima.Core.Requests.Categories;
 using Dima.Core.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Dima.Api.Endpoints.Categories
 {
@@ -10,7 +11,7 @@ namespace Dima.Api.Endpoints.Categories
     {
         public static void Map(IEndpointRouteBuilder app)
 
-           => app.MapPost("/{id}", HandleAsync)
+           => app.MapGet("/{id}", HandleAsync)
             .WithName("Categories: Get by id")
             .WithSummary("Recupera uma categoria")
             .WithDescription("Recupera a categoria selecionada.")
@@ -20,10 +21,15 @@ namespace Dima.Api.Endpoints.Categories
 
 
 
-        private static async Task<IResult> HandleAsync(ICategoryHandler handler, GetCategoryByIdRequest request, long id)
+        private static async Task<IResult> HandleAsync(
+            [FromServices] ICategoryHandler handler, 
+            [FromRoute ] long id)
         {
-            request.Id = id;
-            request.UserId = "";
+            var request = new GetCategoryByIdRequest
+            {
+                Id = id,
+                UserId = ""
+            };
 
             var result = await handler.GetByIdAsync(request);
             return result.IsSuccess
