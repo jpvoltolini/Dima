@@ -12,10 +12,13 @@ namespace Dima.Api.Handlers;
 
 public class TransactionHandler(AppDbContext context) : ITransactionHandler
 {
-    public async Task<Response<Transaction?>> CreateAsync(CreateTransactionRequest request)
+    public async Task<Response<Transaction?>> CreateAsync(CreateTransactionRequest? request)
     {
         try
         {
+            if (request == null)
+                return new Response<Transaction?>(null, 400, "Requisição inválida");
+
             var transaction = new Transaction()
             {
                 UserId = request.UserId,
@@ -42,8 +45,11 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
     {
         try
         {
+            if (request == null)
+                return new Response<Transaction?>(null, 400, "Requisição inválida");
+
             var transaction = await context.Transactions
-                .FirstOrDefaultAsync(t => request != null && t.Id == request.Id);
+                .FirstOrDefaultAsync(t => t.Id == request.Id);
             
             if (transaction is null)
                 return new Response<Transaction?>(null, 404, "Transação não encontrada");
@@ -70,6 +76,9 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
     {
         try
         {
+            if (request == null)
+                return new Response<Transaction?>(null, 400, "Requisição inválida");
+
             var transaction = await context.Transactions
                 .FirstOrDefaultAsync(t => t.Id == request.Id);
 
@@ -86,10 +95,13 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
         }
     }
     
-    public async Task<Response<Transaction?>> GetTransactionByIdAsync(GetTransactionByIdRequest request)
+    public async Task<Response<Transaction?>> GetTransactionByIdAsync(GetTransactionByIdRequest? request)
     {
         try
         {
+            if (request == null)
+                return new Response<Transaction?>(null, 400, "Requisição inválida");
+
             var transaction = await context
                 .Transactions
                 .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
@@ -108,6 +120,10 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
     {
         try
         {
+            if (request == null)
+            {
+                return new PagedResponse<List<Transaction>?>(null, 400, "Requisição inválida");
+            }
             request.StartDate ??= DateTime.Now.GetFirstDay();
             request.EndDate ??= DateTime.Now.GetLastDay();
         }

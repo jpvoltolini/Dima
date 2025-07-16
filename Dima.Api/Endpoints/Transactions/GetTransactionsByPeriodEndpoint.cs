@@ -6,6 +6,7 @@ using Dima.Core.Requests.Categories;
 using Dima.Core.Requests.Transactions;
 using Dima.Core.Responses;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Dima.Api.Endpoints.Transactions;
 
@@ -24,6 +25,7 @@ public class GetTransactionsByPeriodEndpoint : IEndpoint
 
 
     private static async Task<IResult> HandleAsync(
+        ClaimsPrincipal user,
         [FromServices] ITransactionHandler handler, 
         [FromQuery] int pageSize = Configuration.DefaultPageSize,
         [FromQuery] int pageNumber = Configuration.DefaultPageNumber,
@@ -32,7 +34,7 @@ public class GetTransactionsByPeriodEndpoint : IEndpoint
     {
         var request = new GetTransactionsByPeriodRequest
         {
-            UserId = "",
+            UserId = user.Identity?.Name ?? string.Empty,
             PageSize = pageSize,
             PageNumber = pageNumber,
             StartDate = startDate,

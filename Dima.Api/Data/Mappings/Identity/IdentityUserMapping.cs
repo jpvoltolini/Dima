@@ -10,6 +10,7 @@ namespace Dima.Api.Data.Mappings.Identity
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.ToTable("IdentityUser");
+            
             builder.HasKey(u => u.Id);
 
             builder.HasIndex(u => u.NormalizedUserName).IsUnique();
