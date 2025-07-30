@@ -18,11 +18,6 @@ public static class AppExtension
     {
         app.UseAuthentication();
         app.UseAuthorization();
-        
-        app.MapGroup("v1/identity")
-            .WithTags("Identity")
-            .MapIdentityApi<User>();
-
     }  
 }
 
