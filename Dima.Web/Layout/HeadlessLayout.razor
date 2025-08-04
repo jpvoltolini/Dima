@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider
+    @ref="_mudThemeProvider"
+    @bind-IsDarkMode="_isDarkMode" 
+    Theme="Configuration.Theme"/>
+
+<MudSnackbarProvider/>
+
+<MudLayout>
+    <MudAppBar>
+        <h1>Dima</h1>
+        <MudSpacer/>
+        <MudSwitch @bind-Value="_isDarkMode" />
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer>
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code{
+    private bool _isDarkMode { get; set; } = false;
+    private MudThemeProvider _mudThemeProvider = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+            await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemPreferenceChanged);
+            StateHasChanged();
+        }
+    }
+
+    private Task OnSystemPreferenceChanged(bool systemPreference)
+    {
+        _isDarkMode = systemPreference;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+}

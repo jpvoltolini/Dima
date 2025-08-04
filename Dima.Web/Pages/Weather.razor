@@ -1,0 +1,63 @@
+﻿@page "/"
+@inject HttpClient Http
+@layout HeadlessLayout
+
+<PageTitle>should Be Home, but Weather</PageTitle>
+<MudGrid Justify="Justify.Center" >
+    <MudItem xs="12" sm="12" md="8" lg="6" xl="6" xxl="6">
+        <MudPaper Class="mud-whidth-full pa-8">
+          
+            <div class="d-flex mt-8">
+                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+            </div>
+
+            @if (forecasts == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <MudTable T="WeatherForecast" class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th aria-label="Temperature in Celsius">Temp. (C)</th>
+                            <th aria-label="Temperature in Farenheit">Temp. (F)</th>
+                            <th>Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var forecast in forecasts)
+                        {
+                            <tr>
+                                <td>@forecast.Date.ToShortDateString()</td>
+                                <td>@forecast.TemperatureC</td>
+                                <td>@forecast.TemperatureF</td>
+                                <td>@forecast.Summary</td>
+                            </tr>
+                        }
+                    </tbody>
+                </MudTable>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+    }
+    public class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string? Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
